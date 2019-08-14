@@ -8,8 +8,8 @@ class Patient(object):
 	def __init__(self, birthDate, zipCode, admissionDate, dischargeDate, notes):
 		self.age = self.convert_birthdate_to_age(birthDate)
 		self.zipCode = zipCode
-		self.admissionDate = admissionDate
-		self.dischargeDate = dischargeDate
+		self.admissionDate = self.get_year(admissionDate)
+		self.dischargeDate = self.get_year(dischargeDate)
 		self.notes = notes
 
 	@staticmethod
@@ -32,6 +32,9 @@ class Patient(object):
 		age = today.year - _birthDate.year - ((today.month, today.day) < 
          (_birthDate.month, _birthDate.day))
 		return "90+" if age > 89 else str(age)
+
+	def get_year(self, date):
+		return str(datetime.strptime(date, '%Y-%m-%d').date().year)
 
 
 @app.route('/')

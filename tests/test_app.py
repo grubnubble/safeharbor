@@ -20,8 +20,8 @@ def test_safeharbor():
 	assert response.status_code == 200
 	assert json.loads(response.data)["age"] == "19"
 	assert json.loads(response.data)["zipCode"] == patient_data["zipCode"]
-	assert json.loads(response.data)["admissionDate"] == patient_data["admissionDate"]
-	assert json.loads(response.data)["dischargeDate"] == patient_data["dischargeDate"]
+	assert json.loads(response.data)["admissionDate"] == "2019"
+	assert json.loads(response.data)["dischargeDate"] == "2019"
 	assert json.loads(response.data)["notes"] == patient_data["notes"]
 
 def test_convert_birthdate_to_age_90_plus():
