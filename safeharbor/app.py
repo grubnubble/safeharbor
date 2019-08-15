@@ -1,13 +1,15 @@
-import json
+import json, csv
 from datetime import datetime, date
 from flask import Flask, request, jsonify
 
 app = Flask(__name__)
 
 class Patient(object):
+	CSV_FILE = 'population_by_zcta_2010.csv'
+
 	def __init__(self, birthDate, zipCode, admissionDate, dischargeDate, notes):
 		self.age = self.convert_birthdate_to_age(birthDate)
-		self.zipCode = zipCode
+		self.zipCode = self.de_identify_zipcode(zipCode)
 		self.admissionDate = self.get_year(admissionDate)
 		self.dischargeDate = self.get_year(dischargeDate)
 		self.notes = notes
@@ -35,6 +37,21 @@ class Patient(object):
 
 	def get_year(self, date):
 		return str(datetime.strptime(date, '%Y-%m-%d').date().year)
+
+	def strip_last_two_digits(self, zipCode):
+		return zipCode[:3] + "XX"
+
+	def de_identify_zipcode(self, zipCode):
+		csvDict = csv_to_dictionary(self.CSV_FILE)
+		return self.strip_last_two_digits(zipCode)
+
+def csv_to_dictionary(csvfile):
+	data = {}
+	with open(csvfile) as csvfile:
+		popreader = csv.reader(csvfile, delimiter=",")
+		for row in popreader:
+			data[row[0]] = row[1]
+		return data
 
 
 @app.route('/')
