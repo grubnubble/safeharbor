@@ -1,4 +1,4 @@
-import json, csv
+import json, csv, re
 from datetime import datetime, date
 from flask import Flask, request, jsonify
 
@@ -12,7 +12,7 @@ class Patient(object):
 		self.zipCode = self.de_identify_zipcode(zipCode)
 		self.admissionDate = self.get_year(admissionDate)
 		self.dischargeDate = self.get_year(dischargeDate)
-		self.notes = notes
+		self.notes = self.de_identify_notes(notes)
 
 	@staticmethod
 	def from_json(data):
@@ -45,6 +45,17 @@ class Patient(object):
 			return '00000'
 		else:
 			return key + "XX"
+
+	def de_identify_notes(self, notes):
+		# TODO make sure you find all matches
+		email_replaced = re.sub(r'[\w\.-]+@[\w\.-]+', "XXX@XXX.XXX", notes)
+		ssn_replaced = re.sub(r'[0-9]{3}-[0-9]{2}-[0-9]{4}', "XXX-XX-XXXX", email_replaced)
+		phone_replaced = re.sub(r'\([0-9]{3}\) [0-9]{3}-[0-9]{4}', "(XXX) XXX-XXXX", ssn_replaced)
+
+		dateMatch = re.search(r'[0-9]{4}-[0-9]{2}-[0-9]{2}', phone_replaced)
+		dates_replaced = re.sub(r'[0-9]{4}-[0-9]{2}-[0-9]{2}', self.get_year(dateMatch.group(0)), phone_replaced) if dateMatch else phone_replaced
+
+		return dates_replaced
 
 	def _create_zipcode_to_population_dict(self, csvfile):
 		""" Takes a csv file and returns a dictionary where
