@@ -42,15 +42,23 @@ class Patient(object):
 		return zipCode[:3] + "XX"
 
 	def de_identify_zipcode(self, zipCode):
-		csvDict = csv_to_dictionary(self.CSV_FILE)
+		populationDict = csv_to_dictionary(self.CSV_FILE)
 		return self.strip_last_two_digits(zipCode)
 
 def csv_to_dictionary(csvfile):
 	data = {}
+	# TODO refactor: check that the population is less than 20K before adding
 	with open(csvfile) as csvfile:
 		popreader = csv.reader(csvfile, delimiter=",")
 		for row in popreader:
-			data[row[0]] = row[1]
+			key = row[0][:3]
+			if key in data:
+				data[key] = int(data[key]) + int(row[1])
+			else:
+				try:
+					data[key] = int(row[1])
+				except ValueError:
+					pass
 		return data
 
 

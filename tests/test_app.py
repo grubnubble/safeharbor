@@ -40,6 +40,6 @@ def test_convert_birthdate_to_age_90_plus():
 	assert not hasattr(patient, "birthDate")
 
 def test_csv_to_dictionary():
-	expected = {"01002": "29049", "01068": "1902", "01243": "334", "01244": "151", "01463": "11497"}
+	expected = {"010": 30951, "012": 485, "014": 11497}
 	assert type(csv_to_dictionary(CSV_FILE)) == dict
 	assert csv_to_dictionary(CSV_FILE) == expected
