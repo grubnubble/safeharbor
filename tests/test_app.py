@@ -43,3 +43,7 @@ def test_csv_to_dictionary():
 	expected = {"010": 30951, "012": 485, "014": 11497}
 	assert type(csv_to_dictionary(CSV_FILE)) == dict
 	assert csv_to_dictionary(CSV_FILE) == expected
+
+# TODO
+def test_return_00000_when_population_less_than_20k():
+	pass

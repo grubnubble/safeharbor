@@ -38,12 +38,13 @@ class Patient(object):
 	def get_year(self, date):
 		return str(datetime.strptime(date, '%Y-%m-%d').date().year)
 
-	def strip_last_two_digits(self, zipCode):
-		return zipCode[:3] + "XX"
-
 	def de_identify_zipcode(self, zipCode):
 		populationDict = csv_to_dictionary(self.CSV_FILE)
-		return self.strip_last_two_digits(zipCode)
+		key = zipCode[:3]
+		if populationDict[key] < 20000:
+			return '00000'
+		else:
+			return key + "XX"
 
 def csv_to_dictionary(csvfile):
 	data = {}
