@@ -1,5 +1,5 @@
 import json
-from safeharbor.app import app, Patient, csv_to_dictionary
+from safeharbor.app import app, Patient
 
 client = app.test_client()
 patient_data = {
@@ -39,10 +39,12 @@ def test_convert_birthdate_to_age_90_plus():
 	assert patient.age == "90+"
 	assert not hasattr(patient, "birthDate")
 
-def test_csv_to_dictionary():
+def test__create_zipcode_to_population_dict():
 	expected = {"010": 30951, "012": 485, "014": 11497}
-	assert type(csv_to_dictionary(CSV_FILE)) == dict
-	assert csv_to_dictionary(CSV_FILE) == expected
+	patient = Patient.from_json(patient_data)
+	result = Patient._create_zipcode_to_population_dict(patient, CSV_FILE)
+	assert type(result) == dict
+	assert result == expected
 
 # TODO
 def test_return_00000_when_population_less_than_20k():

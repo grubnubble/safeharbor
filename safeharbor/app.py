@@ -27,40 +27,45 @@ class Patient(object):
 		return json.dumps(self.__dict__)
 
 	def convert_birthdate_to_age(self, birthDate):
-		_birthDate = datetime.strptime(birthDate, '%Y-%m-%d').date()
+		birthDate = datetime.strptime(birthDate, '%Y-%m-%d').date()
 		today = date.today()
 
 		# relies on the fact that int(True) == 1 ad int(False) == 0
-		age = today.year - _birthDate.year - ((today.month, today.day) < 
-         (_birthDate.month, _birthDate.day))
+		age = today.year - birthDate.year - ((today.month, today.day) < 
+         (birthDate.month, birthDate.day))
 		return "90+" if age > 89 else str(age)
 
 	def get_year(self, date):
 		return str(datetime.strptime(date, '%Y-%m-%d').date().year)
 
 	def de_identify_zipcode(self, zipCode):
-		populationDict = csv_to_dictionary(self.CSV_FILE)
+		populationDict = self._create_zipcode_to_population_dict(self.CSV_FILE)
 		key = zipCode[:3]
 		if populationDict[key] < 20000:
 			return '00000'
 		else:
 			return key + "XX"
 
-def csv_to_dictionary(csvfile):
-	data = {}
-	# TODO refactor: check that the population is less than 20K before adding
-	with open(csvfile) as csvfile:
-		popreader = csv.reader(csvfile, delimiter=",")
-		for row in popreader:
-			key = row[0][:3]
-			if key in data:
-				data[key] = int(data[key]) + int(row[1])
-			else:
-				try:
-					data[key] = int(row[1])
-				except ValueError:
-					pass
-		return data
+	def _create_zipcode_to_population_dict(self, csvfile):
+		""" Takes a csv file and returns a dictionary where
+			the keys are the first three digits of the zipCode
+			and the values are the total population from all zipcodes
+			starting with those three digits """
+		data = {}
+		# TODO refactor: check that the population is less than 20K before adding
+		with open(csvfile) as csvfile:
+			popreader = csv.reader(csvfile, delimiter=",")
+			for row in popreader:
+				key = row[0][:3]
+				if key in data:
+					data[key] = int(data[key]) + int(row[1])
+				else:
+					try:
+						data[key] = int(row[1])
+					except ValueError:
+						# ignore first row in the file
+						pass
+			return data
 
 
 @app.route('/')
