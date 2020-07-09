@@ -30,7 +30,7 @@ class Patient(object):
 		birthDate = datetime.strptime(birthDate, '%Y-%m-%d').date()
 		today = date.today()
 
-		# relies on the fact that int(True) == 1 ad int(False) == 0
+		# relies on the fact that int(True) == 1 and int(False) == 0
 		age = today.year - birthDate.year - ((today.month, today.day) < 
          (birthDate.month, birthDate.day))
 		return "90+" if age > 89 else str(age)
